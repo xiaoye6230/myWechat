@@ -11,8 +11,10 @@ module.exports = (userData) => {
         //用户输入的是文本
         if (userData.Content === '1') {
             options.content = '好好学习，天天向上';
-        } else if (userData.Content && userData.Content.indexOf('2') !== -1) {
+        } else if (userData.Content.indexOf('2') !== -1) {
             options.content = '你叫什么？ \n我叫小度';
+        } else if (userData.Content === '3') {
+            options.content = `<a href='http://15a00a47.ngrok.io/search'>语音识别页面</a>`
         } else {
             options.content = '你在说什么？我听不明白';
         }

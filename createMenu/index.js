@@ -64,21 +64,53 @@ async function createMenu() {
     //定义请求地址
     const url = `${urlStr}menu/create?access_token=${access_token}`;
     //发送请求
-    const result = await rp({ method: 'POST', url, json: true, body: menu });
-    return result;
+    return await rp({ method: 'POST', url, json: true, body: menu });
 }
 
-async function deleteMenu(){
+async function deleteMenu() {
     const { access_token } = await fetchAccessToken();
     const url = `${urlStr}menu/delete?access_token=${access_token}`;
-    const result = await rp({ method: 'GET', url, json: true });
-    return result;
+    return await rp({ method: 'GET', url, json: true });
 }
 
-(async ()=>{
-    let result=await deleteMenu();
-    console.log(result);
-    result=await createMenu();
-    console.log(result);
-})()
+//创建标签
+async function createTag(name) {
+    const { access_token } = await fetchAccessToken();
+    const url = `${urlStr}tags/create?access_token=${access_token}`;
+    return await rp({ method: 'POST', url, json: true, body: { tag: { name } } });
+}
+//获取标签下的所有粉丝列表
+async function fansTag(tagid, next_openid = '') {
+    const { access_token } = await fetchAccessToken();
+    const url = `${urlStr}user/tag/get?access_token=${access_token}`;
+    return await rp({ method: 'POST', url, json: true, body: { tagid, next_openid } });
+}
 
+//批量为多个用户打标签
+async function batchUsersTag(openid_list, tagid) {
+    const { access_token } = await fetchAccessToken();
+    const url = `${urlStr}tags/members/batchtagging?access_token=${access_token}`;
+    return await rp({ method: 'POST', url, json: true, body: { openid_list, tagid } });
+}
+
+async function sendMessage(body) {
+    const { access_token } = await fetchAccessToken();
+    const url = `${urlStr}message/mass/sendall?access_token=${access_token}`;
+    return await rp({ method: 'POST', url, json: true, body });
+}
+
+(async () => {
+    const body = {
+        "filter": {
+            "is_to_all": false,  // 是否添加进历史记录
+            "tag_id": 139
+        },
+        "text": {
+            "content": '测试群发消息~ \n点击复习相关课程 \n<a href="https://juejin.im/post/5c64d15d6fb9a049d37f9c20">中高级前端大厂面试秘籍</a>'
+        },
+        "msgtype": "text"
+    }
+    const result = await sendMessage(body);
+    console.log(result);
+
+})()
