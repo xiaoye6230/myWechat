@@ -16,7 +16,7 @@
 <script type='text/javascript'>
     wx.config({
         debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-        appId: 'wx25d0606874dc357c', // 必填，公众号的唯一标识
+        appId: '<%= appId %>', // 必填，公众号的唯一标识
         timestamp: '<%= timestamp %>', // 必填，生成签名的时间戳
         nonceStr: '<%= noncestr %>', // 必填，生成签名的随机串
         signature: '<%= signature %>',// 必填，签名
@@ -28,7 +28,7 @@
             'translateVoice'
         ] // 必填，需要使用的JS接口列表        
     });
-
+    
     wx.ready(function () {
         // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，
         // 所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。
@@ -53,6 +53,45 @@
                         isShowProgressTips: 1, // 默认为1，显示进度提示
                         success: function (res) {
                             alert(res.translateResult); // 语音识别的结果
+                            $.getJSON(`https://api.douban.com/v2/movie/search?q=${res.translateResult}&count=9&callback=?`, function (data) {
+                                // console.log(data);
+                                const { subjects } = data;
+                                const html = subjects.reduce((prev, curr) => {
+                                    return prev + `<li>
+                                        <img src="${curr.images.small}" alt="${curr.title}">
+                                        <a href="${curr.alt}">${curr.title}</a>
+                                        <p>电影评分: ${curr.rating.average}</p>
+                                        </li>`;
+                                }, '')
+                                // 设置分享的数据内容 --> 还是需要用户手动点分享
+                                // 注意link和imgUrl必须是在js安全域名内
+                                wx.updateAppMessageShareData({
+                                    title: subjects[0].title, // 分享标题
+                                    desc: '电影评分: ' + subjects[0].rating.average, // 分享描述
+                                    link: '<%= url %>/search', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                                    imgUrl: '<%= url %>/1.jpg', // 分享图标
+                                    success: function () {
+                                        // 设置成功
+                                        alert('分享成功');
+                                    },
+                                    fail: function (err) {
+                                        alert(err);
+                                        // 分享失败
+                                        alert('分享失败')
+                                    }
+                                })
+
+                                wx.updateTimelineShareData({
+                                    title: subjects[0].title, // 分享标题
+                                    link: '<%= url %>/search', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                                    imgUrl: '<%= url %>/1.jpg', // 分享图标
+                                    success: function () {
+                                        // 设置成功
+                                    }
+                                })
+
+                                $('#list').html(html);
+                            })
                         }
                     });
                     isRecord = false;

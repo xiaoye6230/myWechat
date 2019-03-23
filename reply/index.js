@@ -2,14 +2,12 @@ const sha1 = require('sha1');
 const { getUserDataAsync, parseXMLData, formatJsData } = require('../utils/tools');
 const template = require('./template');
 const handleResponse = require('./handleResponse');
+const {token} = require('../config');
 
 module.exports = () => {
     return async (req, res) => {
         //获取到微信服务器发送的请求参数
         const { signature, echostr, timestamp, nonce } = req.query;
-
-        //设置好的token值
-        const token = 'todayis190319';
 
         //将三者字典排序
         const arr = [token, timestamp, nonce].sort();

@@ -1,10 +1,9 @@
 //获取access_token值
 const rp = require('request-promise-native');
 const { writeFileAsync, readFileAsync } = require('../utils/tools');
+const {appId,appSecret} = require('../config');
 
 async function getAccess_token() {
-    const appId = 'wx25d0606874dc357c';
-    const appSecret = '8be46dd4da2ac260f56f138c907fe94f';
     const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appId}&secret=${appSecret}`;
 
     const result = await rp({ nethod: 'GET', url, json: true });

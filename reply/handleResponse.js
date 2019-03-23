@@ -1,3 +1,5 @@
+const { url } = require('../config');
+
 module.exports = (userData) => {
     //实现自动回复功能
     let options = {
@@ -14,7 +16,8 @@ module.exports = (userData) => {
         } else if (userData.Content.indexOf('2') !== -1) {
             options.content = '你叫什么？ \n我叫小度';
         } else if (userData.Content === '3') {
-            options.content = `<a href='http://15a00a47.ngrok.io/search'>语音识别页面</a>`
+            options.content = `<a href="${url}/search">语音识别页面</a>`
+            
         } else {
             options.content = '你在说什么？我听不明白';
         }
